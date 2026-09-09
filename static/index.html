@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="tricolor-light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ministry of Railways | Control Office Application (COA) - Automatic Block Planning Copilot</title>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono for authentic institutional e-governance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Plotly.js CDN -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NATIONAL TRICOLOR TOP STRIPE (SAFFRON • WHITE • GREEN) -->
+  <div class="gov-tricolor-stripe">
+    <div class="stripe-saffron"></div>
+    <div class="stripe-white"></div>
+    <div class="stripe-green"></div>
+  </div>
+
+  <!-- OFFICIAL GOVERNMENT TOP UTILITY BAR -->
+  <div class="gov-utility-bar">
+    <div class="utility-left">
+      <div class="gov-dept-names">
+        <span class="hindi-text">भारत सरकार • रेल मंत्रालय</span>
+        <span class="eng-text">Government of India • Ministry of Railways</span>
+        <span class="portal-unit">Centre for Railway Information Systems (CRIS)</span>
+      </div>
+    </div>
+
+    <div class="utility-right">
+      <!-- Font Resizer Controls -->
+      <div class="accessibility-ctrls" title="Accessibility Font Resize">
+        <button id="btn-font-dec" class="util-btn" title="Decrease Font Size">A-</button>
+        <button id="btn-font-reset" class="util-btn" title="Default Font Size">A</button>
+        <button id="btn-font-inc" class="util-btn" title="Increase Font Size">A+</button>
+      </div>
+
+      <!-- 3-Way Mode Switcher: Light (Tricolor White), Dark, and Contrast Mode -->
+      <div class="theme-mode-selector" title="Switch Display Mode: Light (Tricolor), Dark, or High Contrast">
+        <button class="mode-btn active" data-mode="tricolor-light" id="btn-mode-light" title="Light Mode (Indian Flag Tri-Color on White Canvas)">
+          <i data-lucide="sun"></i>
+          <span>Light</span>
+        </button>
+        <button class="mode-btn" data-mode="dark" id="btn-mode-dark" title="Dark Mode (Night Operations Console)">
+          <i data-lucide="moon"></i>
+          <span>Dark</span>
+        </button>
+        <button class="mode-btn" data-mode="high-contrast" id="btn-mode-contrast" title="High Contrast Mode (WCAG AAA Accessibility)">
+          <i data-lucide="contrast"></i>
+          <span>Contrast</span>
+        </button>
+      </div>
+
+      <!-- Language Selector -->
+      <div class="lang-selector">
+        <span class="lang-link active" title="English Interface">English</span>
+        <span class="lang-sep">|</span>
+        <span class="lang-link" title="हिन्दी इंटरफ़ेस (सूचनात्मक)">हिन्दी</span>
+      </div>
+
+      <!-- Live Indian Standard Time Clock -->
+      <div class="gov-clock-pill">
+        <i data-lucide="clock"></i>
+        <span id="current-clock">--:--:-- IST</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN GOVERNMENT INSTITUTIONAL BRAND HEADER -->
+  <header class="top-header">
+    <div class="header-brand">
+      <div class="rail-logo" title="Indian Railways - Section Controller Console">
+        <i data-lucide="train"></i>
+      </div>
+      <div class="brand-text">
+        <div class="brand-title">
+          <span class="ir-tag"><i data-lucide="building-2"></i> NORTH CENTRAL RAILWAY • JHANSI DIVISION</span>
+          <h1>CONTROL OFFICE APPLICATION (COA) — AUTOMATIC BLOCK PLANNING COPILOT</h1>
+        </div>
+        <div class="brand-subtitle">
+          <span class="division-pill"><i data-lucide="shield"></i> SECTION CONTROLLER CONSOLE</span>
+          <span class="dot-sep">•</span>
+          <span class="section-pill"><i data-lucide="map-pin"></i> CNB - JHS High-Density Corridor (220 Km)</span>
+          <span class="dot-sep">•</span>
+          <span class="sec-class-badge"><i data-lucide="lock"></i> RESTRICTED • OFFICIAL USE ONLY</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Unified Administrative Controller Access Badge -->
+      <div class="status-badge admin-badge" title="Full administrative authority: Datasets, CP-SAT Solver & T/409 Notices">
+        <i data-lucide="shield-check"></i>
+        <span>SEC-CON LEVEL 1 ACCESS</span>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <button id="btn-quick-solve" class="btn btn-primary" title="Execute Google OR-Tools CP-SAT Solver">
+        <i data-lucide="zap"></i>
+        <span>EXECUTE CP-SAT SOLVER</span>
+      </button>
+
+      <button id="btn-reset-data" class="btn btn-secondary" title="Reset corridor to default North Central Railway schedule">
+        <i data-lucide="rotate-ccw"></i>
+        <span>RESET SCHEDULE</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN APPLICATION LAYOUT GRID -->
+  <div class="dashboard-container">
+    
+    <!-- LEFT SIDEBAR: DATA INGESTION & SCENARIO CONTROL -->
+    <aside class="sidebar-panel">
+      
+      <!-- Preset Operational Scenarios -->
+      <div class="sidebar-section">
+        <div class="section-title">
+          <i data-lucide="layers"></i>
+          <span>OPERATIONAL SCENARIOS</span>
+          <span class="section-badge">PRESETS</span>
+        </div>
+        <div class="scenario-selector">
+          
+          <!-- Scenario 1: Track Renewal -->
+          <button class="scenario-card active" data-scenario="track_renewal_180">
+            <div class="scenario-header">
+              <span class="badge badge-track"><i data-lucide="wrench"></i> TRACK</span>
+              <span class="scenario-time"><i data-lucide="clock"></i> 14:00 (180m)</span>
+            </div>
+            <div class="scenario-name">Afternoon Track Renewal</div>
+            <div class="scenario-desc">
+              <span class="desc-line"><i data-lucide="map-pin"></i> Kalpi – Orai (KPI-ORAI)</span>
+              <span class="desc-sub"><i data-lucide="shield-alert"></i> Heavy Machine Ballast Tamping</span>
+            </div>
+          </button>
+
+          <!-- Scenario 2: OHE Wire Inspection -->
+          <button class="scenario-card" data-scenario="ohe_wire_120">
+            <div class="scenario-header">
+              <span class="badge badge-ohe"><i data-lucide="zap"></i> OHE</span>
+              <span class="scenario-time"><i data-lucide="clock"></i> 11:30 (120m)</span>
+            </div>
+            <div class="scenario-name">Traction Wire Inspection</div>
+            <div class="scenario-desc">
+              <span class="desc-line"><i data-lucide="map-pin"></i> Orai – Ait Jn (ORAI-AIT)</span>
+              <span class="desc-sub"><i data-lucide="battery-charging"></i> Cantilever & Dropper Maintenance</span>
+            </div>
+          </button>
+
+          <!-- Scenario 3: Signal & Telecom -->
+          <button class="scenario-card" data-scenario="signal_testing_90">
+            <div class="scenario-header">
+              <span class="badge badge-signal"><i data-lucide="radio"></i> S&T</span>
+              <span class="scenario-time"><i data-lucide="clock"></i> 16:00 (90m)</span>
+            </div>
+            <div class="scenario-name">Axle Counter & Signal Test</div>
+            <div class="scenario-desc">
+              <span class="desc-line"><i data-lucide="map-pin"></i> Bhimsen – Pokhrayan (BZM-PHN)</span>
+              <span class="desc-sub"><i data-lucide="cpu"></i> Electronic Interlocking Relay Test</span>
+            </div>
+          </button>
+
+          <!-- Scenario 4: Critical Rail Defect -->
+          <button class="scenario-card" data-scenario="emergency_fracture_60">
+            <div class="scenario-header">
+              <span class="badge badge-critical"><i data-lucide="alert-octagon"></i> CRITICAL</span>
+              <span class="scenario-time"><i data-lucide="clock"></i> 15:00 (60m)</span>
+            </div>
+            <div class="scenario-name">Emergency Rail Defect</div>
+            <div class="scenario-desc">
+              <span class="desc-line"><i data-lucide="map-pin"></i> Ait – Moth (AIT-MOTH)</span>
+              <span class="desc-sub"><i data-lucide="flame"></i> Emergency Weld Repair & Jogged Fishplate</span>
+            </div>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Active Block Request Configuration -->
+      <div class="sidebar-section">
+        <div class="section-title">
+          <i data-lucide="sliders-horizontal"></i>
+          <span>BLOCK PARAMETER CONTROLS</span>
+          <span class="section-badge">MANUAL</span>
+        </div>
+        <div class="block-form">
+          <div class="form-group">
+            <label for="input-department">
+              <i data-lucide="building-2"></i> Department
+            </label>
+            <select id="input-department" class="form-control">
+              <option value="Track Engineering">🛠️ Track Engineering (Civil)</option>
+              <option value="Traction / OHE">⚡ Traction / OHE (Electrical)</option>
+              <option value="Signal & Telecom (S&T)">📡 Signal & Telecom (S&T)</option>
+              <option value="Track Safety Emergency">🚨 Track Safety Emergency</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="input-segment">
+              <i data-lucide="git-commit"></i> Track Segment
+            </label>
+            <select id="input-segment" class="form-control">
+              <option value="CNB-BZM">CNB - BZM (Kanpur - Bhimsen, 14 Km)</option>
+              <option value="BZM-PHN">BZM - PHN (Bhimsen - Pokhrayan, 45 Km)</option>
+              <option value="PHN-KPI">PHN - KPI (Pokhrayan - Kalpi, 14 Km)</option>
+              <option value="KPI-ORAI" selected>KPI - ORAI (Kalpi - Orai, 33 Km)</option>
+              <option value="ORAI-AIT">ORAI - AIT (Orai - Ait Jn, 25 Km)</option>
+              <option value="AIT-MOTH">AIT - MOTH (Ait Jn - Moth, 34 Km)</option>
+              <option value="MOTH-CGN">MOTH - CGN (Moth - Chirgaon, 23 Km)</option>
+              <option value="CGN-JHS">CGN - JHS (Chirgaon - Jhansi, 32 Km)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="input-start-time">
+                <i data-lucide="clock"></i> Window Start
+              </label>
+              <input type="text" id="input-start-time" class="form-control" value="14:00" placeholder="HH:MM" />
+            </div>
+            <div class="form-group">
+              <label for="input-duration">
+                <i data-lucide="hourglass"></i> Duration (Mins)
+              </label>
+              <input type="number" id="input-duration" class="form-control" value="180" min="15" max="480" step="15" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="input-priority">
+              <i data-lucide="flag"></i> Operational Priority
+            </label>
+            <select id="input-priority" class="form-control">
+              <option value="Critical">🔴 Critical (Immediate Corridor Halt)</option>
+              <option value="High" selected>🟠 High (Division Priority)</option>
+              <option value="Medium">🟡 Medium (Regular Maintenance)</option>
+              <option value="Low">🟢 Low (Discretionary)</option>
+            </select>
+          </div>
+
+          <button id="btn-apply-manual-block" class="btn btn-action w-100">
+            <i data-lucide="play-circle"></i>
+            <span>APPLY & RE-SOLVE</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dataset Ingestion & Drag-and-Drop Upload -->
+      <div class="sidebar-section">
+        <div class="section-title">
+          <i data-lucide="upload-cloud"></i>
+          <span>DATASET INGESTION</span>
+          <span class="section-badge">CRIS FOIS</span>
+        </div>
+        <div class="dataset-upload-zone">
+          <!-- Drop Area -->
+          <div class="drop-area" id="drop-area">
+            <i data-lucide="file-up" class="drop-icon"></i>
+            <p class="drop-text">Drag & drop CSV/JSON datasets here</p>
+            <span class="drop-subtext">or click to upload timetable / corridor network</span>
+            <input type="file" id="file-input-upload" class="d-none" accept=".csv,.json" />
+          </div>
+
+          <!-- Dataset Download & Template Links -->
+          <div class="dataset-pills">
+            <a href="/api/data/sample/train_schedules.csv" class="dataset-pill" download title="Download sample train schedules CSV">
+              <i data-lucide="file-spreadsheet"></i> train_schedules.csv
+            </a>
+            <a href="/api/data/sample/track_network.json" class="dataset-pill" download title="Download track network topology JSON">
+              <i data-lucide="file-code"></i> track_network.json
+            </a>
+            <a href="/api/data/sample/block_requests.csv" class="dataset-pill" download title="Download maintenance block requests CSV">
+              <i data-lucide="file-text"></i> block_requests.csv
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- CENTER STAGE: EXECUTIVE METRICS & INTERACTIVE VISUALIZATIONS -->
+    <main class="main-content">
+      
+      <!-- EXECUTIVE KPI METRIC CARDS WITH TRI-COLOR ACCENTS -->
+      <section class="kpi-grid">
+        
+        <!-- Total Train Delay Added (Saffron India Accent) -->
+        <div class="kpi-card card-accent-saffron">
+          <div class="kpi-header">
+            <span class="kpi-title"><i data-lucide="alarm-clock"></i> TOTAL TRAIN DELAY ADDED</span>
+            <div class="kpi-icon-wrap bg-saffron"><i data-lucide="clock-alert"></i></div>
+          </div>
+          <div class="kpi-value-wrap">
+            <span class="kpi-value" id="kpi-total-delay">--</span>
+            <span class="kpi-unit">mins</span>
+          </div>
+          <div class="kpi-footer">
+            <span class="badge badge-saffron" id="kpi-delay-badge"><i data-lucide="cpu"></i> Optimized by CP-SAT</span>
+            <span class="kpi-subtext" id="kpi-delay-sub"><i data-lucide="trending-up"></i> Siding loop regulation</span>
+          </div>
+        </div>
+
+        <!-- Maintenance Block Granted Duration (Navy Blue Flag Accent) -->
+        <div class="kpi-card card-accent-navy">
+          <div class="kpi-header">
+            <span class="kpi-title"><i data-lucide="construction"></i> BLOCK GRANTED DURATION</span>
+            <div class="kpi-icon-wrap bg-navy"><i data-lucide="hard-hat"></i></div>
+          </div>
+          <div class="kpi-value-wrap">
+            <span class="kpi-value" id="kpi-block-duration">180</span>
+            <span class="kpi-unit">mins</span>
+          </div>
+          <div class="kpi-footer">
+            <span class="badge badge-navy" id="kpi-window-span"><i data-lucide="clock"></i> 14:00 – 17:00</span>
+            <span class="kpi-subtext" id="kpi-block-segment"><i data-lucide="map-pin"></i> KPI - ORAI (33 Km)</span>
+          </div>
+        </div>
+
+        <!-- Section Throughput Efficiency (India Green Accent) -->
+        <div class="kpi-card card-accent-green">
+          <div class="kpi-header">
+            <span class="kpi-title"><i data-lucide="gauge"></i> THROUGHPUT EFFICIENCY</span>
+            <div class="kpi-icon-wrap bg-green"><i data-lucide="activity"></i></div>
+          </div>
+          <div class="kpi-value-wrap">
+            <span class="kpi-value" id="kpi-throughput">--</span>
+            <span class="kpi-unit">%</span>
+          </div>
+          <div class="kpi-footer">
+            <span class="badge badge-green"><i data-lucide="check-circle-2"></i> High Density Line</span>
+            <span class="kpi-subtext"><i data-lucide="shield"></i> Capacity preserved</span>
+          </div>
+        </div>
+
+        <!-- Safety Headway Compliance (Royal Purple Accent) -->
+        <div class="kpi-card card-accent-purple">
+          <div class="kpi-header">
+            <span class="kpi-title"><i data-lucide="shield-check"></i> SAFETY HEADWAY COMPLIANCE</span>
+            <div class="kpi-icon-wrap bg-purple"><i data-lucide="shield-alert"></i></div>
+          </div>
+          <div class="kpi-value-wrap">
+            <span class="kpi-value" id="kpi-headway-compliance">100.0</span>
+            <span class="kpi-unit">%</span>
+          </div>
+          <div class="kpi-footer">
+            <span class="badge badge-purple"><i data-lucide="check"></i> 7-Min Block Clearance</span>
+            <span class="kpi-subtext" id="kpi-solver-time"><i data-lucide="cpu"></i> Solved in 0.27s</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- VISUALIZATIONS & REPORTING HUB -->
+      <section class="viz-container">
+        
+        <!-- Tab Navigation Bar with Tri-Color Highlights -->
+        <div class="viz-tabs-bar">
+          <div class="tab-buttons">
+            <button class="tab-btn active" data-tab="tab-marey">
+              <i data-lucide="line-chart"></i>
+              <span>TIME-DISTANCE STRING CHART (MAREY)</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-topology">
+              <i data-lucide="milestone"></i>
+              <span>CORRIDOR TOPOLOGY & SIDINGS</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-timetable">
+              <i data-lucide="table-2"></i>
+              <span>COMPARATIVE TIMETABLE MATRIX</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-notice">
+              <i data-lucide="file-badge-2"></i>
+              <span>FORM T/409 CAUTION ORDER</span>
+            </button>
+          </div>
+
+          <!-- Chart Controls (Visible when Marey chart active) -->
+          <div class="chart-controls" id="marey-controls">
+            <label class="toggle-pill">
+              <input type="checkbox" id="toggle-baseline" checked />
+              <span><i data-lucide="eye"></i> Baseline Timetable</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="toggle-siding-markers" checked />
+              <span><i data-lucide="diamond"></i> Siding Holds</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- TAB 1: MAREY TIME-DISTANCE STRINGLINE CHART -->
+        <div class="tab-content active" id="tab-marey">
+          <div class="chart-wrapper">
+            <div id="plotly-marey-chart" class="plotly-chart"></div>
+            <!-- Loading Overlay -->
+            <div class="chart-loading-overlay d-none" id="chart-loader">
+              <div class="spinner"></div>
+              <span><i data-lucide="cpu"></i> Executing Google OR-Tools CP-SAT Solver...</span>
+            </div>
+          </div>
+          <div class="chart-legend-guide">
+            <div class="legend-item"><span class="legend-box bg-vande"></span> ⚡ Vande Bharat (P1)</div>
+            <div class="legend-item"><span class="legend-box bg-rajdhani"></span> 👑 Rajdhani Express (P1)</div>
+            <div class="legend-item"><span class="legend-box bg-superfast"></span> 🚆 Mail / Superfast (P2)</div>
+            <div class="legend-item"><span class="legend-box bg-passenger"></span> 🚊 MEMU Passenger (P3)</div>
+            <div class="legend-item"><span class="legend-box bg-freight"></span> 📦 Goods / Freight (P4)</div>
+            <div class="legend-item"><span class="legend-box bg-block-zone"></span> 🛑 Maintenance Block Window</div>
+            <div class="legend-item"><span class="legend-line line-baseline"></span> ⋯ Baseline Timetable</div>
+            <div class="legend-item"><span class="legend-marker marker-siding"></span> ◆ Siding Loop Hold</div>
+          </div>
+        </div>
+
+        <!-- TAB 2: CORRIDOR TOPOLOGY & SIDING STATUS -->
+        <div class="tab-content" id="tab-topology">
+          <div class="topology-wrapper">
+            <div class="topology-header">
+              <div class="top-meta-badge">
+                <i data-lucide="git-branch"></i> AUTOMATIC BLOCK SIGNALING SECTION
+              </div>
+              <h3>NORTH CENTRAL RAILWAY: KANPUR CENTRAL (CNB) - JHANSI JN (JHS)</h3>
+              <p><i data-lucide="info"></i> Double-line 25 kV AC electrified section with loop line siding capacities and active block restriction segment.</p>
+            </div>
+            <div class="track-schematic" id="track-schematic-nodes">
+              <!-- Rendered dynamically by app.js -->
+            </div>
+            <div class="siding-summary-grid" id="siding-summary-grid">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: COMPARATIVE TIMETABLE TABLE -->
+        <div class="tab-content" id="tab-timetable">
+          <div class="table-card">
+            <div class="table-header-row">
+              <div class="table-title">
+                <i data-lucide="table"></i> Section Train Trajectory & Delay Penalty Matrix
+              </div>
+              <div class="table-stats">
+                <span id="trains-ontime-count" class="badge badge-green"><i data-lucide="check-circle-2"></i> -- On-Time</span>
+                <span id="trains-held-count" class="badge badge-saffron"><i data-lucide="pause-circle"></i> -- Held at Siding</span>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="ir-table" id="timetable-table">
+                <thead>
+                  <tr>
+                    <th><i data-lucide="hash"></i> Train ID</th>
+                    <th><i data-lucide="train"></i> Train Name</th>
+                    <th><i data-lucide="tag"></i> Category</th>
+                    <th><i data-lucide="award"></i> Priority</th>
+                    <th><i data-lucide="log-out"></i> Origin Dep</th>
+                    <th><i data-lucide="clock"></i> Baseline Arr</th>
+                    <th><i data-lucide="check-square"></i> Solved Arr</th>
+                    <th><i data-lucide="timer"></i> Delay</th>
+                    <th><i data-lucide="corner-down-right"></i> Siding Loop Holds</th>
+                    <th><i data-lucide="activity"></i> Status</th>
+                  </tr>
+                </thead>
+                <tbody id="timetable-tbody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: AUTOMATED OPERATIONAL DISPATCH NOTICE (T/409 MEMO) -->
+        <div class="tab-content" id="tab-notice">
+          <div class="notice-container">
+            <div class="notice-actions-toolbar">
+              <div class="notice-badge">
+                <i data-lucide="stamp"></i>
+                <span>FORM T/409 • DIVISIONAL BLOCK CAUTION ORDER & SIDING ADVISORY</span>
+              </div>
+              <div class="notice-buttons">
+                <button class="btn btn-sm btn-outline" id="btn-copy-notice" title="Copy plain text order to clipboard">
+                  <i data-lucide="copy"></i> Copy Memo
+                </button>
+                <a href="/api/notice/text" class="btn btn-sm btn-outline" id="btn-download-notice" download title="Download plain text caution order">
+                  <i data-lucide="download"></i> Download .TXT
+                </a>
+                <button class="btn btn-sm btn-primary" id="btn-print-notice" title="Print official caution order">
+                  <i data-lucide="printer"></i> Print Order
+                </button>
+              </div>
+            </div>
+            <div class="notice-document" id="notice-document-view">
+              <pre id="notice-text-content">Loading Operational Dispatch Notice...</pre>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- RIGHT DOCK: OPERATIONAL AI COPILOT INTERACTIVE CHAT -->
+    <aside class="copilot-panel">
+      <div class="copilot-header">
+        <div class="copilot-title-group">
+          <div class="copilot-avatar">
+            <i data-lucide="bot"></i>
+          </div>
+          <div>
+            <div class="copilot-title">IR-BlockCopilot</div>
+            <div class="copilot-status">
+              <span class="status-dot"></span>
+              <span><i data-lucide="shield-check" style="width:12px;height:12px;display:inline;"></i> Active • Section Controller AI</span>
+            </div>
+          </div>
+        </div>
+        <button id="btn-toggle-key" class="btn-icon" title="Configure Gemini API Key">
+          <i data-lucide="key-round"></i>
+        </button>
+      </div>
+
+      <!-- Optional API Key Input Drawer -->
+      <div class="api-key-drawer d-none" id="api-key-drawer">
+        <div class="key-drawer-inner">
+          <label><i data-lucide="shield"></i> Optional Gemini API Key:</label>
+          <div class="input-with-btn">
+            <input type="password" id="input-api-key" placeholder="Enter GEMINI_API_KEY..." />
+            <button id="btn-save-key" class="btn btn-xs btn-primary">Save</button>
+          </div>
+          <span class="key-help"><i data-lucide="check"></i> Offline Pydantic NLP parser works out-of-the-box without any key.</span>
+        </div>
+      </div>
+
+      <!-- Quick Prompt Suggestion Chips -->
+      <div class="suggestion-chips">
+        <button class="chip" data-prompt="Grant a 180-minute track maintenance block on Kanpur-Jhansi segment starting at 14:00">
+          <i data-lucide="wrench"></i> "Grant 180m track block on KPI-ORAI at 14:00"
+        </button>
+        <button class="chip" data-prompt="Schedule a 2 hour OHE wire maintenance on Orai to Ait starting at 11:30">
+          <i data-lucide="zap"></i> "2h OHE block on ORAI-AIT at 11:30"
+        </button>
+        <button class="chip" data-prompt="Postpone block on KPI-ORAI by 30 minutes to 14:30">
+          <i data-lucide="clock"></i> "Postpone block by 30 mins to 14:30"
+        </button>
+        <button class="chip" data-prompt="Why were trains held at siding loops and what is the punctuality impact?">
+          <i data-lucide="help-circle"></i> "Explain siding holds & punctuality"
+        </button>
+      </div>
+
+      <!-- Chat History Stream -->
+      <div class="copilot-messages" id="copilot-messages">
+        <!-- Welcome Message -->
+        <div class="message msg-assistant">
+          <div class="msg-content">
+            <p><strong><i data-lucide="badge-check"></i> Section Controller Copilot Initialized.</strong></p>
+            <p>I monitor the <strong>Kanpur Central – Jhansi Jn (NCR)</strong> corridor. Enter any maintenance request in plain English or select a scenario. I will extract structured constraints, enforce safety headway clearance, and generate official T/409 dispatch orders.</p>
+          </div>
+          <div class="msg-time"><i data-lucide="clock"></i> System Ready • Level-1 Access</div>
+        </div>
+      </div>
+
+      <!-- Structured NLP Extraction Badge Preview -->
+      <div class="nlp-extracted-badge d-none" id="nlp-extracted-badge">
+        <div class="badge-title">
+          <i data-lucide="cpu"></i>
+          <span>PARSED STRUCTURED PARAMETERS</span>
+        </div>
+        <div class="badge-content" id="nlp-badge-content">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Chat Input Field -->
+      <div class="copilot-input-area">
+        <form id="copilot-form" class="chat-form">
+          <input 
+            type="text" 
+            id="chat-input" 
+            class="chat-input" 
+            placeholder="E.g., Grant a 180-min track block on Kanpur-Jhansi at 14:00..." 
+            autocomplete="off"
+          />
+          <button type="submit" class="btn-send" id="btn-send-chat" title="Send to Copilot">
+            <i data-lucide="send"></i>
+          </button>
+        </form>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- OFFICIAL GOVERNMENT E-GOVERNANCE FOOTER -->
+  <footer class="gov-footer">
+    <div class="footer-inner">
+      <div class="footer-brand-info">
+        <div class="footer-title">
+          <span class="hindi-sm">भारतीय रेल • उत्तर मध्य रेलवे</span>
+          <strong>INDIAN RAILWAYS • NORTH CENTRAL RAILWAY (NCR)</strong>
+        </div>
+        <p class="footer-text">
+          Control Office Application (COA) AI Module for Dynamic Automatic Maintenance Block Allocation. Designed in accordance with Indian Railways Operating Manual, General & Subsidiary Rules (G&SR), and Form T/409 Caution Order specifications.
+        </p>
+      </div>
+
+      <div class="footer-certifications">
+        <div class="cert-item">
+          <i data-lucide="shield-check"></i>
+          <div>
+            <strong>CRIS Certified</strong>
+            <span>Centre for Railway Information Systems</span>
+          </div>
+        </div>
+        <div class="cert-item">
+          <i data-lucide="lock"></i>
+          <div>
+            <strong>Operational Security</strong>
+            <span>Restricted Internal Network Access</span>
+          </div>
+        </div>
+        <div class="cert-item">
+          <i data-lucide="check-circle-2"></i>
+          <div>
+            <strong>Safety Headway Standard</strong>
+            <span>G&SR Rule 15.06 Compliant</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom-bar">
+      <div class="footer-links">
+        <a href="#tab-marey" class="f-link">Time-Distance String Chart</a>
+        <span class="f-dot">•</span>
+        <a href="#tab-topology" class="f-link">Corridor Topology</a>
+        <span class="f-dot">•</span>
+        <a href="#tab-timetable" class="f-link">Live Schedule Matrix</a>
+        <span class="f-dot">•</span>
+        <a href="#tab-notice" class="f-link">Form T/409 Dispatch Notice</a>
+      </div>
+      <div class="footer-copy">
+        © 2026 Ministry of Railways, Government of India. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script Initialization -->
+  <script src="app.js"></script>
+</body>
+</html>

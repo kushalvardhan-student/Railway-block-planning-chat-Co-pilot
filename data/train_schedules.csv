@@ -1,0 +1,10 @@
+Train_ID,Train_Name,Train_Type,Priority_Rank,Departure_Time,Route_Stations,Average_Speed
+20104,Gorakhpur - LTT Superfast,Express,2,12:20,"CNB,BZM,PHN,KPI,ORAI,AIT,MOTH,CGN,JHS",85
+12591,Gorakhpur - Yesvantpur SF,Express,2,12:45,"CNB,BZM,PHN,KPI,ORAI,AIT,MOTH,CGN,JHS",85
+22436,Vande Bharat Express,Superfast,1,14:10,"CNB,BZM,PHN,KPI,ORAI,AIT,MOTH,CGN,JHS",105
+12424,New Delhi - Dibrugarh Rajdhani,Rajdhani,1,14:35,"CNB,BZM,PHN,KPI,ORAI,AIT,MOTH,CGN,JHS",95
+12555,Gorakhdham Superfast,Express,2,13:50,"CNB,BZM,PHN,KPI,ORAI,AIT,MOTH,CGN,JHS",80
+12174,Pratapgarh LTT Superfast,Express,2,14:55,"CNB,BZM,PHN,KPI,ORAI,AIT,MOTH,CGN,JHS",75
+04153,CNB-JHS MEMU Passenger,Passenger,3,14:00,"CNB,BZM,PHN,KPI,ORAI,AIT,MOTH,CGN,JHS",50
+BOXN-7041,Coal Rake Freight,Freight,4,13:30,"CNB,BZM,PHN,KPI,ORAI,AIT,MOTH,CGN,JHS",45
+BCN-9120,Container Goods Rake,Freight,4,15:15,"CNB,BZM,PHN,KPI,ORAI,AIT,MOTH,CGN,JHS",45

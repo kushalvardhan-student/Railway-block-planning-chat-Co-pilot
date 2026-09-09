@@ -1,0 +1,5 @@
+Request_ID,Department,Segment_ID,Required_Duration_Mins,Preferred_Window_Start,Priority
+REQ-BLK-101,Track Engineering,KPI-ORAI,180,14:00,High
+REQ-BLK-102,Traction / OHE,ORAI-AIT,120,11:30,Medium
+REQ-BLK-103,Signal & Telecom (S&T),BZM-PHN,90,16:00,Medium
+REQ-BLK-104,Track Safety Emergency,AIT-MOTH,60,15:00,Critical

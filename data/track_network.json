@@ -1,0 +1,29 @@
+{
+  "Corridor_Name": "Kanpur Central (CNB) - Jhansi Jn (JHS) Golden Link",
+  "Zone": "North Central Railway (NCR)",
+  "Division": "Jhansi / Prayagraj Division",
+  "Total_Length_Km": 220,
+  "Station_Nodes": [
+    { "code": "CNB", "name": "Kanpur Central", "km": 0, "has_siding": true, "loop_lines": 4, "platform_count": 10 },
+    { "code": "BZM", "name": "Bhimsen", "km": 14, "has_siding": true, "loop_lines": 2, "platform_count": 3 },
+    { "code": "PHN", "name": "Pokhrayan", "km": 59, "has_siding": true, "loop_lines": 2, "platform_count": 3 },
+    { "code": "KPI", "name": "Kalpi", "km": 73, "has_siding": true, "loop_lines": 1, "platform_count": 2 },
+    { "code": "ORAI", "name": "Orai", "km": 106, "has_siding": true, "loop_lines": 3, "platform_count": 4 },
+    { "code": "AIT", "name": "Ait Jn", "km": 131, "has_siding": true, "loop_lines": 2, "platform_count": 3 },
+    { "code": "MOTH", "name": "Moth", "km": 165, "has_siding": true, "loop_lines": 2, "platform_count": 2 },
+    { "code": "CGN", "name": "Chirgaon", "km": 188, "has_siding": true, "loop_lines": 1, "platform_count": 2 },
+    { "code": "JHS", "name": "Virangana Lakshmibai Jhansi", "km": 220, "has_siding": true, "loop_lines": 5, "platform_count": 8 }
+  ],
+  "Track_Segments": [
+    { "segment_id": "CNB-BZM", "from_station": "CNB", "to_station": "BZM", "length_km": 14, "max_speed_kmph": 110, "capacity": 4, "electrified": true, "signaling": "Absolute Automatic Block" },
+    { "segment_id": "BZM-PHN", "from_station": "BZM", "to_station": "PHN", "length_km": 45, "max_speed_kmph": 120, "capacity": 3, "electrified": true, "signaling": "Absolute Automatic Block" },
+    { "segment_id": "PHN-KPI", "from_station": "PHN", "to_station": "KPI", "length_km": 14, "max_speed_kmph": 110, "capacity": 3, "electrified": true, "signaling": "Automatic Block" },
+    { "segment_id": "KPI-ORAI", "from_station": "KPI", "to_station": "ORAI", "length_km": 33, "max_speed_kmph": 130, "capacity": 4, "electrified": true, "signaling": "Automatic Block" },
+    { "segment_id": "ORAI-AIT", "from_station": "ORAI", "to_station": "AIT", "length_km": 25, "max_speed_kmph": 130, "capacity": 4, "electrified": true, "signaling": "Automatic Block" },
+    { "segment_id": "AIT-MOTH", "from_station": "AIT", "to_station": "MOTH", "length_km": 34, "max_speed_kmph": 120, "capacity": 3, "electrified": true, "signaling": "Absolute Block" },
+    { "segment_id": "MOTH-CGN", "from_station": "MOTH", "to_station": "CGN", "length_km": 23, "max_speed_kmph": 120, "capacity": 3, "electrified": true, "signaling": "Absolute Block" },
+    { "segment_id": "CGN-JHS", "from_station": "CGN", "to_station": "JHS", "length_km": 32, "max_speed_kmph": 110, "capacity": 4, "electrified": true, "signaling": "Automatic Block" }
+  ],
+  "Safety_Headway_Minutes": 7,
+  "Default_Loop_Hold_Station": "ORAI"
+}
